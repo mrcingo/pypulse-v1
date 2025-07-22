@@ -203,7 +203,7 @@ void CefPulseHandler::PlatformTitleChange
   CefWindowHandle hWnd = browser -> GetHost() -> GetWindowHandle();
   if (hWnd) 
   {
-    SetWindowText(hWnd, std::wstring(title).c_str());
+    SetWindowTextW(hWnd, std::wstring(title).c_str());
   }
 }
 

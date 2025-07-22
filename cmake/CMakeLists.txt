@@ -27,8 +27,6 @@ set(APP_SRCS
     ../src/core/CefPulseHandler.cpp
     ../src/core/CefPulseHandler.h
 
-    ../src/core/CefPulseMain.cpp
-
     ../src/core/CefPulseUtils.cpp
     ../src/core/CefPulseUtils.h
 )
@@ -45,22 +43,25 @@ if(OS_WINDOWS)
     add_logical_target("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
 endif()
 
-include_directories(../../include)
-
 # Target executable name
 set(APP_TARGET "CefPulseApp")
 
 if(OS_WINDOWS)
     # Merge resources into sources
-    set(APP_SRCS ${APP_SRCS} ${APP_RESOURCES_SRCS} ${SHARED_SRCS})
+    # set(APP_SRCS ${APP_SRCS} ${APP_RESOURCES_SRCS} ${SHARED_SRCS})
+    # set(APP_SRCS ${APP_SRCS})
 
     # Create source groups for Visual Studio
-    set_app_source_groups("${APP_SRCS}")
+    # set_app_source_groups("${APP_SRCS}")
 
     # Executable target
-    add_executable(${APP_TARGET} WIN32 ${APP_SRCS})
+    # add_executable(${APP_TARGET} WIN32 
+    #   ${APP_SRCS} 
+    #   ../src/core/CefPulseMain.cpp
+    # )
+    add_library(${APP_TARGET} STATIC ${APP_SRCS})
 
-    set_app_executable_target_properties(${APP_TARGET})
+    # set_app_executable_target_properties(${APP_TARGET})
 
     add_dependencies(${APP_TARGET} libcef_dll_wrapper)
 
@@ -83,4 +84,16 @@ if(OS_WINDOWS)
         "${APP_TARGET_OUT_DIR}/assets"
         VERBATIM
     )
+
+    pybind11_add_module(cefpulse ../src/core/bind/Initialize.cpp)
+    target_link_libraries(cefpulse PRIVATE 
+        ${APP_TARGET} 
+        libcef_lib
+        libcef_dll_wrapper
+        ${CEF_STANDARD_LIBS}
+    )
+    target_include_directories(cefpulse PRIVATE ..)
+
+    copy_files("cefpulse" "${CEF_BINARY_FILES}" "${CEF_BINARY_DIR}" "$<TARGET_FILE_DIR:cefpulse>")
+    copy_files("cefpulse" "${CEF_RESOURCE_FILES}" "${CEF_RESOURCE_DIR}" "$<TARGET_FILE_DIR:cefpulse>")
 endif()

@@ -22,6 +22,7 @@
 
 cmake_minimum_required(VERSION 3.13)
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
+set(CMAKE_CXX_STANDARD 17)
 
 # 
 # Project Configuration
@@ -64,6 +65,9 @@ find_package(CEF REQUIRED)
 #
 # Target Configuration
 #
+
+# Add pybind11 to the project (this will generate the binds between Python and C++) 
+add_subdirectory(pybind11)
 
 # Include the libcef_dll_wrapper target (executes libcef_dll/CMakeLists.txt)
 add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
