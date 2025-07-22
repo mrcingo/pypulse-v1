@@ -1,0 +1,3 @@
+import cefpulse
+
+cefpulse.Initialize()
