@@ -20,67 +20,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-#include <windows.h>
-
 #include "CefPulseApp.h"
 
+#include <windows.h>
 #include "include/cef_command_line.h"
-#include "include/cef_sandbox_win.h"
-#include "include/cef_version_info.h"
+#include "include/cef_app.h"
 
-namespace {
-    int RunMain(HINSTANCE hInstance) 
-    {
-        int exit_code;
-
-        CefSettings settings;
-        settings.no_sandbox = true;
-
-        CefMainArgs main_args(hInstance);
-
-        exit_code = CefExecuteProcess(main_args, nullptr, nullptr);
-        if (exit_code >= 0) {
-            return exit_code;
-        }
-
-        CefRefPtr<CefPulseApp> app(new CefPulseApp("https://google.com"));
-
-        if (!CefInitialize(main_args, settings, app.get(), nullptr)) {
-            return CefGetExitCode();
-        }
-
-        CefRunMessageLoop();
-
-        CefShutdown();
-
-        return 0;
-    }
-}
-
-
-int APIENTRY wWinMain
-(
-    HINSTANCE hInstance,
-    HINSTANCE hPrevInstance, 
-    LPTSTR lpCmdLine, 
-    int nCmdShow
-) 
-{
+int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow) {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
+    UNREFERENCED_PARAMETER(nCmdShow);
 
-#if defined(ARCH_CPU_32_BITS)
-    int exit_code = CefRunWinMainWithPreferredStackSize(
-        wWinMain, 
-        hInstance,
-        lpCmdLine, 
-        nCmdShow
-    );
-    if (exit_code >= 0) 
-    {
-        return exit_code;
-    }
-#endif
+    CefRefPtr<CefCommandLine> command_line = CefCommandLine::CreateCommandLine();
 
-    return ::RunMain(hInstance);
+    command_line->InitFromString(GetCommandLineW());
+
+    CefMainArgs main_args(hInstance);
+
+    CefRefPtr<CefPulseApp> app(new CefPulseApp("https://google.com"));
+
+    int exit_code = CefExecuteProcess(main_args, app.get(), nullptr);
+    return exit_code;
 }

@@ -31,23 +31,17 @@
 #include "include/cef_version_info.h"
 
 namespace {
-    int Initialize() 
+    int Initialize(const std::wstring &subprocess_path_str)
     {
         HINSTANCE hInstance = GetModuleHandle(nullptr);
+        CefMainArgs main_args(hInstance);
 
-        int exit_code;
-
+        CefRefPtr<CefPulseApp> app(new CefPulseApp("https://google.com"));
+        
         CefSettings settings;
         settings.no_sandbox = true;
 
-        CefMainArgs main_args(hInstance);
-
-        exit_code = CefExecuteProcess(main_args, nullptr, nullptr);
-        if (exit_code >= 0) {
-            return exit_code;
-        }
-
-        CefRefPtr<CefPulseApp> app(new CefPulseApp("https://google.com"));
+        CefString(&settings.browser_subprocess_path) = subprocess_path_str;
 
         if (!CefInitialize(main_args, settings, app.get(), nullptr)) {
             return CefGetExitCode();
@@ -62,5 +56,5 @@ namespace {
 }
 
 PYBIND11_MODULE(cefpulse, m) {
-    m.def("Initialize", &Initialize);
+    m.def("Initialize", &Initialize, pybind11::arg("subprocess_path"));
 }

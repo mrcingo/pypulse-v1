@@ -59,6 +59,28 @@ if(OS_WINDOWS)
         ${CEF_STANDARD_LIBS}
     )
     target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE ../..)
+
+    # Subprocess executable path
+    add_executable(cefpulsesub CefPulseMain.cpp)
+
+    set_target_properties(cefpulsesub PROPERTIES WIN32_EXECUTABLE TRUE)
+
+    target_compile_definitions(cefpulsesub PRIVATE UNICODE _UNICODE)
+
+    add_dependencies(cefpulsesub libcef_dll_wrapper)
+
+    target_link_libraries(cefpulsesub PRIVATE 
+        ${CMAKE_PROJECT_NAME}
+        libcef_lib
+        libcef_dll_wrapper
+        ${CEF_STANDARD_LIBS}
+    )
+    
+    target_include_directories(cefpulsesub PRIVATE ../..)
+
+    set_target_properties(cefpulsesub PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "$<TARGET_FILE_DIR:cefpulse>"
+    )
 endif()
 
 #
